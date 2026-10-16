@@ -1,0 +1,12 @@
+# Preserve line endings and binary definitions for Cadence Virtuoso OpenAccess files
+* text=auto eol=lf
+
+# OpenAccess database files (binary)
+*.oa binary
+*.dm binary
+*.png binary
+
+# Cadence metadata files (preserve LF)
+*.tag text eol=lf
+.oalib text eol=lf
+cdsinfo.tag text eol=lf

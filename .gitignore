@@ -1,0 +1,104 @@
+# ==============================================================================
+# Cadence Virtuoso & Spectre .gitignore
+# Excludes lock files, temporary run-time logs, generated simulation databases,
+# and proprietary PDK/model files while preserving OpenAccess library data & metadata.
+# ==============================================================================
+
+# Cadence Edit Lock Stake & Lock Files
+*.cdslck
+*.cdslck.*
+*.lck
+*.lck.*
+cds.lck
+
+# Cadence Virtuoso & Tool Runtime Logs
+CDS.log
+CDS.log.*
+cds.log
+cds.log.*
+pvs.log
+spectre.out
+spectre.err
+libManager.log*
+webl.log*
+virtuoso.log*
+*.log
+*.log.*
+
+# Cadence Simulation Outputs, Waveforms & Transient Run Directories
+simulation/
+Simulation/
+Sim/
+*sim*/
+psf/
+*.raw/
+*.raw
+*.trn/
+*.trn
+*.dsn
+*.vcd
+*.fsdb
+*.shm/
+*.art
+spectre.run/
+netlist/
+ihnl/
+artist_states/
+runObjFile
+
+# Cadence Temporary, Backup & Autosave Files
+*~
+*.tmp
+*.bak
+.#*
+\#*\#
+core
+core.*
+
+# Cadence User Settings & Temporary Folders
+.cadence/
+.artist_states/
+
+# Physical Verification Run Outputs (DRC / LVS / PVS / Pegasus / Assura / Calibre)
+pvs/
+drc/
+lvs/
+qrc/
+assura/
+calibre/
+*.erc_errors
+*.drc_errors
+*.lvs_errors
+
+# Third-Party PDKs and External Model Directories
+# (Specifically exclude external PDK/foundry directories; do not globally exclude
+# *.scs, *.va, or *.lib as these extensions can contain user-authored design files)
+gpdk180/
+gpdk*/
+models/
+Models/
+pdk/
+PDK/
+foundry/
+Foundry/
+
+# Operating System & IDE Artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# ------------------------------------------------------------------------------
+# Whitelist Required OpenAccess Library & View Metadata
+# ------------------------------------------------------------------------------
+!.oalib
+!cdsinfo.tag
+!data.dm
+!master.tag
+!sch.oa
+!symbol.oa
+!thumbnail_*.png
+!screenshots/
+!README.md
