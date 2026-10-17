@@ -13,3 +13,4 @@ This directory contains design schematics, symbol definitions, testbench configu
 8. **`nand_schematic.png`** — Transistor-level schematic of the 2-input CMOS NAND gate (`nand_2`) in gpdk180.
 9. **`xor_2.png`** — Schematic symbol for the 2-input XOR gate (`xor_2`).
 10. **`xor_2_tb.png`** — Simulation testbench schematic for verifying `xor_2`.
+11. **`load_50ff_waveforms.png`** — Spectre transient simulation waveforms (0–80 ns) of `full_adder_load_tb` under a 50 fF capacitive load per output (`CL = 50f`).

@@ -1,0 +1,3 @@
+projectDir = '"~/simulation"
+designInfo = '("full_adder_project" "full_adder_load_tb" "schematic" "spectre")
+descriptionText = "Output load characterization; CL=5f; 1.8V; NN; tran 80ns"

@@ -41,6 +41,7 @@ full_adder (Top-Level Cell)
 | **`xor_2_tb`** | Testbench | `schematic` | `schematic` | Functional testbench for verifying `xor_2` |
 | **`nand_2`** | Base Primitive | `schematic`, `symbol`, `symbol_1` | **`symbol`** | Transistor-level 2-input static CMOS NAND gate built with gpdk180 NMOS and PMOS transistors.<br><br>**Symbol View Notes:**<br>• **`symbol`**: The actively supported, official schematic symbol.<br>• **`symbol_1`**: An **obsolete view**, preserved for historical archive and backward compatibility. **Do not use for new instantiations, and do not delete.** |
 | **`nand_2_tb`** | Testbench | `schematic` | `schematic` | Functional testbench for verifying `nand_2` |
+| **`full_adder_load_tb`** | Testbench | `schematic`, `spectre_state1` | `schematic` | Parametric output-load testbench for characterizing delay and power across variable load capacitance ($C_L$) on `Sum` and `Cout` |
 
 ### 2.1 Design & Symbol Schematics
 
@@ -75,9 +76,10 @@ All schematic views, symbol views, and OpenAccess metadata (`cdsinfo.tag`, `.oal
 | **`nand_2_tb`** | `schematic` | None (currently absent) | OpenAccess database intact; `data.dm` & `master.tag` preserved |
 | **`xor_2`** | `schematic`, `symbol` | None (currently absent) | OpenAccess database intact; `data.dm` & `master.tag` preserved |
 | **`xor_2_tb`** | `schematic` | None (currently absent) | OpenAccess database intact; `data.dm` & `master.tag` preserved |
+| **`full_adder_load_tb`** | `schematic`, `spectre_state1` | **`spectre_state1`** (saved ADE state) | OpenAccess database intact; `master.tag` & `data.dm` preserved |
 
 > **Status of Saved ADE States:**  
-> Saved ADE states (such as ADE L `spectre_state*`, ADE XL `adexl`, or Maestro views) are **currently absent** from this library. To run simulations, follow the manual simulation setup instructions in Section 4.3.
+> A saved ADE state (**`spectre_state1`**) is included with the output-load characterization testbench (`full_adder_load_tb`). For the primitive cells and baseline testbenches, saved ADE states are currently absent; follow the manual simulation setup instructions in Section 4.3.
 
 ---
 
@@ -182,6 +184,56 @@ All **8 input combinations** ($2^3$) were simulated and functionally verified ov
 ![Sum Falling Delay](screenshots/sum_falling_delay.png)  
 *Figure 10: Approximate $C_{in}$-to-$\text{Sum}$ falling delay measurement with markers placed near 0.9 V (M8 = 50.04918 ns, M9 = 50.21079 ns; difference = 161.61 ps ≈ 162 ps).*
 
+### 5.4 Output-Load Parametric Characterization (`full_adder_load_tb`)
+
+To evaluate driving performance under varying capacitive loading, output-load characterization was performed using the `full_adder_load_tb` testbench (configured with saved ADE state `spectre_state1`). Both `Sum` and `Cout` load capacitors are parameterized with the design variable `CL`.
+
+#### Simulation Conditions
+- **Technology PDK:** Cadence `gpdk180` (Generic 180 nm CMOS)
+- **Power Supply ($V_{DD}$):** 1.8 V
+- **Model Corner:** `NN` (typical NMOS, typical PMOS)
+- **Temperature:** 27 °C
+- **Transient Duration:** 80 ns (`stop = 80n`)
+- **Integration Accuracy:** `conservative`
+- **Input Rise/Fall Times:** 100 ps
+- **Capacitive Loading Variable:** Both `Sum` and `Cout` load capacitors use the design variable `CL`.
+- **Methodology:** Four manually repeated simulations for $C_L \in \{5, 10, 20, 50\}\text{ fF}$.
+
+#### Characterization Results
+
+| Load per output (fF) | Sum rising delay (ps) | Sum falling delay (ps) | Average supply power (µW) |
+| :---: | :---: | :---: | :---: |
+| 5  | 103.7 | 151.7 | 19.78 |
+| 10 | 114.6 | 159.7 | 20.80 |
+| 20 | 135.9 | 174.0 | 22.87 |
+| 50 | 198.5 | 212.4 | 29.02 |
+
+#### Exact Calculator Expressions
+The characterization metrics were computed using the following exact Cadence Spectre Calculator expressions:
+
+- **Sum rising delay:**
+  ```text
+  cross(clip(VT("/Sum") 9n 12n) 0.9 1 "rising" nil nil) - cross(clip(VT("/Cin") 9n 12n) 0.9 1 "rising" nil nil)
+  ```
+- **Sum falling delay:**
+  ```text
+  cross(clip(VT("/Sum") 49n 52n) 0.9 1 "falling" nil nil) - cross(clip(VT("/Cin") 49n 52n) 0.9 1 "rising" nil nil)
+  ```
+- **Average supply power:**
+  ```text
+  -1.8 * average(IT("/V0/PLUS"))
+  ```
+
+#### Transition Definitions & Measurement Details
+- **Threshold Crossings:** Delays are calculated using 0.9 V voltage crossings ($50\%\, V_{DD}$) on the input $C_{in}$ and output $\text{Sum}$ waveforms.
+- **Rising Transition:** Rising $\text{Sum}$ measured near $t = 10\text{ ns}$ with input condition $A = 0, B = 0$, triggered by rising $C_{in}$.
+- **Falling Transition:** Falling $\text{Sum}$ measured near $t = 50\text{ ns}$ with input condition $A = 1, B = 0$, triggered by rising $C_{in}$.
+- **Timing Scope:** Both measurements are triggered by a rising $C_{in}$ edge. These represent selected transitions under specific input states, rather than exhaustive worst-case timing characterization across all input combinations.
+- **Power Calculation:** Power is the continuous average $V_{DD}$ supply power calculated over the entire 0–80 ns simulation window.
+
+![Full Adder Waveforms under 50 fF Load](screenshots/load_50ff_waveforms.png)  
+*Figure 11: Spectre transient simulation waveforms (0–80 ns) of `full_adder_load_tb` under a 50 fF capacitive load per output (`CL = 50f`) illustrating input switching, delayed Sum/Cout waveforms, and dynamic supply current `/V0/PLUS`.*
+
 ---
 
 ## 6. Cadence Virtuoso Integration & Lock Handling
@@ -244,6 +296,22 @@ full_adder_project/
 │       ├── master.tag
 │       ├── sch.oa
 │       └── thumbnail_128x128.png
+│
+├── full_adder_load_tb/                 # Parametric output-load testbench
+│   ├── schematic/
+│   │   ├── data.dm                     # View dependency mapping
+│   │   ├── master.tag                  # OA master reference (sch.oa)
+│   │   ├── sch.oa                      # OpenAccess schematic binary database
+│   │   └── thumbnail_128x128.png       # Virtuoso preview thumbnail
+│   └── spectre_state1/                 # Saved ADE state for load characterization
+│       ├── ADE_state.info
+│       ├── analyses.state              # 80 ns transient setup (conservative)
+│       ├── environmentOptions.state
+│       ├── master.tag
+│       ├── modelSetup.state
+│       ├── outputs.state
+│       ├── variables.state             # Parameterized CL variable
+│       └── ...                         # Solver, cosim, and waveform state files
 │
 ├── nand_2/                             # 2-input CMOS NAND gate primitive
 │   ├── data.dm
