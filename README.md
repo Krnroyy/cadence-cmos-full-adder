@@ -177,10 +177,10 @@ All **8 input combinations** ($2^3$) were simulated and functionally verified ov
 > Delay markers were placed manually near 0.9 V, not exactly at the 50% voltage threshold, on the input $C_{in}$ and output $\text{Sum}$ waveforms under different $A/B$ excitation conditions. Delays are approximate (~115 ps rising, ~162 ps falling) and do not represent exhaustive worst-case characterization.
 
 ![Sum Rising Delay](screenshots/sum_rising_delay.png)  
-*Figure 9: Approximate $C_{in}$-to-$\text{Sum}$ rising delay measurement (~115 ps) with markers placed near 0.9 V (`M11` on $C_{in}$ at 10.052 ns / 942 mV; `M12` on $\text{Sum}$ at 10.167 ns / 938 mV).*
+*Figure 9: Approximate $C_{in}$-to-$\text{Sum}$ rising delay measurement with markers placed near 0.9 V (M4 = 10.052353 ns, M6 = 10.167004 ns; difference = 114.651 ps ≈ 115 ps).*
 
 ![Sum Falling Delay](screenshots/sum_falling_delay.png)  
-*Figure 10: Approximate $C_{in}$-to-$\text{Sum}$ falling delay measurement (~162 ps) with markers placed near 0.9 V (`M14` on $C_{in}$ at 50.049 ns / 885 mV; `M15` on $\text{Sum}$ at 50.216 ns / 716 mV).*
+*Figure 10: Approximate $C_{in}$-to-$\text{Sum}$ falling delay measurement with markers placed near 0.9 V (M8 = 50.04918 ns, M9 = 50.21079 ns; difference = 161.61 ps ≈ 162 ps).*
 
 ---
 
